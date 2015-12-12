@@ -4,9 +4,9 @@ import shutil
 import os.path
 
 try:
-    from setuptools import setup, Extension, Command
+    from setuptools import setup, Extension, Command, find_packages
 except ImportError:
-    from distutils.core import setup, Extension, Command
+    from distutils.core import setup, Extension, Command, find_packages
 
 
 dirname = os.path.dirname(os.path.abspath(__file__))
@@ -14,14 +14,17 @@ dirname = os.path.dirname(os.path.abspath(__file__))
 
 class BaseCommand(Command):
     user_options = []
+
     def initialize_options(self):
         pass
+
     def finalize_options(self):
         pass
 
 
 class CleanCommand(BaseCommand):
-    description = 'cleanup directories created by packaging and build processes'
+    description = 'cleanup directories created by packaging and build processes'  # noqa
+
     def run(self):
         for path in ['build', 'dist', 'misaka.egg-info', 'docs/_build']:
             if os.path.exists(path):
@@ -32,6 +35,7 @@ class CleanCommand(BaseCommand):
 
 class CythonCommand(BaseCommand):
     description = 'compile Cython files(s) into C file(s)'
+
     def run(self):
         try:
             from Cython.Compiler.Main import compile
@@ -62,13 +66,14 @@ class VendorCommand(BaseCommand):
 
 class TestCommand(BaseCommand):
     description = 'run unit tests'
+
     def run(self):
         os.system('python tests/misaka_test.py')
 
 
 setup(
-    name='misaka',
-    version='1.0.3',
+    name='douban.misaka',
+    version='1.0.4.1',
     description='The Python binding for Sundown, a markdown parsing library.',
     author='Frank Smit',
     author_email='frank@61924.nl',
@@ -76,13 +81,15 @@ setup(
     license='MIT',
     long_description=open(os.path.join(dirname, 'README.rst')).read(),
     scripts=['scripts/misaka'],
+    namespace_packages=['douban'],
+    packages=find_packages(include=['douban']),
     cmdclass={
         'clean': CleanCommand,
         'compile_cython': CythonCommand,
         'update_vendor': VendorCommand,
         'test': TestCommand
     },
-    ext_modules=[Extension('misaka', [
+    ext_modules=[Extension('douban.misaka', [
         'src/misaka.c',
         'src/wrapper.c',
         'src/sundown/stack.c',
@@ -94,7 +101,8 @@ setup(
         'src/sundown/houdini_html_e.c',
         'src/sundown/autolink.c'
     ])],
-    classifiers = [
+    py_modules=['douban.misaka'],
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
