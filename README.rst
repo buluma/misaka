@@ -1,4 +1,4 @@
-Misaka
+Misaka - ShadowNet
 ======
 
 .. image:: https://secure.travis-ci.org/FSX/misaka.png?branch=master
